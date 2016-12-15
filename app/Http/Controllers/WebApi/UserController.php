@@ -16,7 +16,14 @@ class UserController extends Controller
     public function index()
     {
         //获取分页用户
-        return User::all();
+        $cols = ['id', 'name', 'email', 'created_at', 'updated_at'];
+        $users = User::all();
+        $data = [
+            "cols" => $cols,
+            "users" => $users
+        ];
+
+        return $data;
 
     }
 

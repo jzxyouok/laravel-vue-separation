@@ -12,25 +12,60 @@
     <!-- html- -->
 
     <div id="app">
-      <button type="button" name="button" @click="fetchUsers">获取</button>
+      <grid-list :grid-cols="gridCols" :grid-tabledata="gridTabledata" :modal-title="modalTitle"></grid-list>
     </div>
 
-    <!-- Template -->
+
+    <!-- Modal框 子组件 -->
+    <template id="modalDialog">
+      <div class="modal" :class="{ 'is-active': showModal }">
+        <div class="modal-background" @click="showModal=false"></div>
+        <div class="modal-card">
+          <header class="modal-card-head">
+            <p class="modal-card-title" v-if="modalTitle">{{ modalTitle }}</p>
+            <button class="delete"></button>
+          </header>
+          <section class="modal-card-body">
+            <!-- Content ... -->
+          </section>
+          <footer class="modal-card-foot">
+            <a class="button is-primary">Save changes</a>
+            <a class="button">Cancel</a>
+          </footer>
+        </div>
+      </div>
+    </template>
+
+    <!-- gridList Template -->
     <template id="gridList">
-      <div class="box">
+      <div class="box" v-if="gridTabledata">
+        <!-- 搜索🔍 -->
+          <div class="">
+            <label for="" class="label">搜索</label>
+            <input class="input" type="text" placeholder="🔍搜索关键字">
+          </div>
+        <!-- Table -->
         <table class="table">
           <thead>
             <tr>
-
+              <td v-for="key in gridCols">{{ key }}</td>
             </tr>
           </thead>
           <tfoot>
-
+            <tr>
+              <td v-for="key in gridCols">{{ key }}</td>
+            </tr>
           </tfoot>
           <tbody>
-
+            <tr v-for="item in gridTabledata">
+              <td v-for="key in gridCols">{{ item[key] }}</td>
+            </tr>
           </tbody>
         </table>
+
+        <!-- 模态框子组件操作 添加 修改 -->
+        <a class="button is-primary" @click="show=true">添加成员</a>
+        <modal-dialog :modal-title="modalTitle" :show="show=true"></modal-dialog>
       </div>
     </template>
 
@@ -42,26 +77,59 @@
       Vue.component('grid-list', {
         template: '#gridList',
         props: {
-          columns: {
+          gridCols: {
             type: Array,
-
           },
-
+          gridTabledata: {
+            type: Array
+          },
+          modalTitle: {
+            type: String
+          }
+        },
+        data: function () {
+          return {
+            show: {
+              type: Boolean,
+              default: false
+            }
+          }
+        },
+        components: {
+          'modal-dialog': {
+            template: '#modalDialog',
+            props: ['modalTitle', 'show'],
+            computed: {
+              showModal: function () {
+                // alert(this.show)
+                return this.show
+              }
+            }
+          }
         }
       })
 
       var app = new Vue({
         el: '#app',
         data: {
-          fetchUrl: "http://homestead.app/api/v1/user"
-        },
+          gridCols: null,
+          gridTabledata: null,
+          fetchUrl: "http://homestead.app/api/v1/user",
 
+          modalTitle: "默认标题",
+        },
+        mounted: function () {
+          this.fetchUsers()
+        },
         methods: {
           fetchUsers: function () {
             var _self = this
             this.$http.get(_self.fetchUrl).then((response) => {
               //success callback
-              console.log(response);
+              var data = response.body
+              _self.gridTabledata = data.users
+              _self.gridCols = data.cols
+              console.log(data);
             }, (response) => {
               //error callback
               console.log(response);
