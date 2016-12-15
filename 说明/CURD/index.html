@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>vue-resource_CURD</title>
+    <!-- 引入 css 库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.2.3/css/bulma.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.2.3/css/bulma.css.map"/>
+  </head>
+  <body>
+
+    <!-- html- -->
+
+    <div id="app">
+      <button type="button" name="button" @click="fetchUsers">获取</button>
+    </div>
+
+    <!-- Template -->
+    <template id="gridList">
+      <div class="box">
+        <table class="table">
+          <thead>
+            <tr>
+
+            </tr>
+          </thead>
+          <tfoot>
+
+          </tfoot>
+          <tbody>
+
+          </tbody>
+        </table>
+      </div>
+    </template>
+
+    <!-- Vue JS 库  -->
+    <script src="https://unpkg.com/vue@2.1.6/dist/vue.js" charset="utf-8"></script>
+    <script src="https://cdn.jsdelivr.net/vue.resource/1.0.3/vue-resource.min.js"></script>
+    <script charset="utf-8">
+
+      Vue.component('grid-list', {
+        template: '#gridList',
+        props: {
+          columns: {
+            type: Array,
+
+          },
+
+        }
+      })
+
+      var app = new Vue({
+        el: '#app',
+        data: {
+          fetchUrl: "http://homestead.app/api/v1/user"
+        },
+
+        methods: {
+          fetchUsers: function () {
+            var _self = this
+            this.$http.get(_self.fetchUrl).then((response) => {
+              //success callback
+              console.log(response);
+            }, (response) => {
+              //error callback
+              console.log(response);
+            })
+          }
+        }
+      })
+
+    </script>
+  </body>
+</html>
