@@ -19,18 +19,22 @@
     <!-- Modal框 子组件 -->
     <template id="modalDialog">
       <div class="modal" :class="{ 'is-active': showModal }">
-        <div class="modal-background" @click="showModal=false"></div>
+        <div class="modal-background" @click="$emit('close')"></div>
         <div class="modal-card">
           <header class="modal-card-head">
             <p class="modal-card-title" v-if="modalTitle">{{ modalTitle }}</p>
-            <button class="delete"></button>
+            <button class="delete" @click="$emit('close')"></button>
           </header>
           <section class="modal-card-body">
             <!-- Content ... -->
+            <form class="form">
+              <label for="" class="label">Label</label>
+              <a class="button is-success">测试</a>
+            </form>
           </section>
           <footer class="modal-card-foot">
             <a class="button is-primary">Save changes</a>
-            <a class="button">Cancel</a>
+            <a class="button" @click="$emit('close')">Cancel</a>
           </footer>
         </div>
       </div>
@@ -48,24 +52,33 @@
         <table class="table">
           <thead>
             <tr>
-              <td v-for="key in gridCols">{{ key }}</td>
+              <td v-for="key in gridCols">
+                <span  v-if="key.isKey">{{ key.name }}</span>
+                <span  v-else>{{ key.name }}</span>
+              </td>
             </tr>
           </thead>
           <tfoot>
             <tr>
-              <td v-for="key in gridCols">{{ key }}</td>
+              <td v-for="key in gridCols">
+                <span  v-if="key.isKey">{{ key.name }}</span>
+                <span  v-else>{{ key.name }}</span>
+              </td>
             </tr>
           </tfoot>
           <tbody>
             <tr v-for="item in gridTabledata">
-              <td v-for="key in gridCols">{{ item[key] }}</td>
+              <td v-for="key in gridCols">
+                <span v-if="key.isKey"><a @click="alert('edit')">{{ item[key.name] }}</a></span>
+                <span v-else>{{ item[key.name] }}</span>
+              </td>
             </tr>
           </tbody>
         </table>
 
         <!-- 模态框子组件操作 添加 修改 -->
         <a class="button is-primary" @click="show=true">添加成员</a>
-        <modal-dialog :modal-title="modalTitle" :show="show=true"></modal-dialog>
+        <modal-dialog :modal-title="modalTitle" :show="show" @close="show=false"></modal-dialog>
       </div>
     </template>
 
@@ -89,10 +102,7 @@
         },
         data: function () {
           return {
-            show: {
-              type: Boolean,
-              default: false
-            }
+            show: false
           }
         },
         components: {
@@ -106,6 +116,9 @@
               }
             }
           }
+        },
+        methods: {
+
         }
       })
 
